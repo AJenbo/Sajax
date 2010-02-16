@@ -1,6 +1,10 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.7 (March 9, 2005)
+
+* [php] Major bug calling remote functions without args.
+
 Sajax version 0.6 (March 8, 2005)
 
 * Layout of archive changed; base folder changed; subfolders added for backends
