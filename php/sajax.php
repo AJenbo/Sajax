@@ -1,34 +1,70 @@
 <?php	
 if (!isset($SAJAX_INCLUDED)) {
 
+	/*  
+	 * GLOBALS AND DEFAULTS
+	 *
+	 */ 
 	$sajax_debug_mode = 0;
 	$sajax_export_list = array();
+	$sajax_request_type = "GET";
+	$sajax_remote_uri = "";
 	
+	/*
+	 * CODE
+	 *
+	 */ 
 	function sajax_init() {
 	}
 	
+	function sajax_get_my_uri() {
+		global $REQUEST_URI;
+		
+		return $REQUEST_URI;
+	}
+	
+	$sajax_remote_uri = sajax_get_my_uri();
+
 	function sajax_handle_client_request() {
 		global $sajax_export_list;
 		
-		if (empty($_GET["rs"])) 
+		$mode = "";
+		
+		if (! empty($_GET["rs"])) 
+			$mode = "get";
+		
+		if (!empty($_POST["rs"]))
+			$mode = "post";
+			
+		if (empty($mode)) 
 			return;
 
-		// Bust cache in the head
-		header ("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
-		header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-		// always modified
-		header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
-		header ("Pragma: no-cache");                          // HTTP/1.0
-			
-		$func_name = $_GET["rs"];
+		if ($mode == "get") {
+			// Bust cache in the head
+			header ("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
+			header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+			// always modified
+			header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+			header ("Pragma: no-cache");                          // HTTP/1.0
+			$func_name = $_GET["rs"];
+			if (! empty($_GET["rsargs"])) 
+				$args = $_GET["rsargs"];
+			else
+				$args = array();
+		}
+		else {
+			$func_name = $_POST["rs"];
+			if (! empty($_POST["rsargs"])) 
+				$args = $_POST["rsargs"];
+			else
+				$args = array();
+		}
+		
 		if (! in_array($func_name, $sajax_export_list))
 			echo "-:$func_name not callable";
 		else {
 			echo "+:";
-			if (empty($_GET["rsargs"])) 
-				$result = call_user_func($_GET["rs"]);
-			else
-				$result = call_user_func_array($_GET["rs"], $_GET["rsargs"]);
+			$result = call_user_func_array($func_name, $args);
 			echo $result;
 		}
 		exit;
@@ -36,6 +72,12 @@ if (!isset($SAJAX_INCLUDED)) {
 	
 	function sajax_get_common_js() {
 		global $sajax_debug_mode;
+		global $sajax_request_type;
+		global $sajax_remote_uri;
+		
+		$t = strtoupper($sajax_request_type);
+		if ($t != "GET" && $t != "POST") 
+			return "// Invalid type: $t.. \n\n";
 		
 		ob_start();
 		?>
@@ -43,6 +85,7 @@ if (!isset($SAJAX_INCLUDED)) {
 		// remote scripting library
 		// (c) copyright 2005 modernmethod, inc
 		var sajax_debug_mode = <?php echo $sajax_debug_mode ? "true" : "false"; ?>;
+		var sajax_request_type = "<?php echo $t; ?>";
 		
 		function sajax_debug(text) {
 			if (sajax_debug_mode)
@@ -67,13 +110,33 @@ if (!isset($SAJAX_INCLUDED)) {
 				sajax_debug("Could not create connection object.");
 			return A;
 		}
-		function sajax_do_call(func_name, url, args) {
+		function sajax_do_call(func_name, args) {
 			var i, x, n;
-			for (i = 0; i < args.length-1; i++) 
-				url = url + "&rsargs[]=" + escape(args[i]);
-			url = url + "&rsrnd=" + new Date().getTime();
+			var uri;
+			var post_data;
+			
+			uri = "<?php echo $sajax_remote_uri; ?>";
+			if (sajax_request_type == "GET") {
+				if (uri.indexOf("?") == -1) 
+					uri = uri + "?rs=" + escape(func_name);
+				else
+					uri = uri + "&rs=" + escape(func_name);
+				for (i = 0; i < args.length-1; i++) 
+					uri = uri + "&rsargs[]=" + escape(args[i]);
+				uri = uri + "&rsrnd=" + new Date().getTime();
+				post_data = null;
+			} else {
+				post_data = "rs=" + escape(func_name);
+				for (i = 0; i < args.length-1; i++) 
+					post_data = post_data + "&rsargs[]=" + escape(args[i]);
+			}
+			
 			x = sajax_init_object();
-			x.open("GET", url, true);
+			x.open(sajax_request_type, uri, true);
+			if (sajax_request_type == "POST") {
+				x.setRequestHeader("Method", "POST " + uri + " HTTP/1.1");
+				x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			}
 			x.onreadystatechange = function() {
 				if (x.readyState != 4) 
 					return;
@@ -88,8 +151,8 @@ if (!isset($SAJAX_INCLUDED)) {
 				else  
 					args[args.length-1](data);
 			}
-			x.send(null);
-			sajax_debug(func_name + " url = " + url);
+			x.send(post_data);
+			sajax_debug(func_name + " uri = " + uri + "/post = " + post_data);
 			sajax_debug(func_name + " waiting..");
 			delete x;
 		}
@@ -111,24 +174,13 @@ if (!isset($SAJAX_INCLUDED)) {
 	}
 
 	function sajax_get_one_stub($func_name) {
-		global $REQUEST_URI;
-		
-		$uri = $REQUEST_URI;
-		if (strpos($uri,"?") === false) 
-			$uri .= "?rs=".urlencode($func_name);
-		else
-			$uri .= "&rs=".urlencode($func_name);
-		
 		ob_start();	
 		?>
 		
 		// wrapper for <?php echo $func_name; ?>
 		
 		function x_<?php echo $func_name; ?>() {
-			// count args; build URL
-			
 			sajax_do_call("<?php echo $func_name; ?>",
-				"<?php echo sajax_esc($uri); ?>",
 				x_<?php echo $func_name; ?>.arguments);
 		}
 		
@@ -172,6 +224,7 @@ if (!isset($SAJAX_INCLUDED)) {
 	{
 		echo sajax_get_javascript();
 	}
+
 	
 	$SAJAX_INCLUDED = 1;
 }

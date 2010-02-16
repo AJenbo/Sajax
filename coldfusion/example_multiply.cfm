@@ -1,37 +1,36 @@
-#!/usr/bin/env python
-import cgitb;cgitb.enable()
-import sajax1
+<cfinclude template="sajax.cfm">
+<cfscript>	
+	function multiply(x, y) {
+		return x * y;
+	}
+	
+	sajax_init();
+	//sajax_debug_mode = 1;:
+	sajax_export("multiply");
+	sajax_handle_client_request();
+	
+</cfscript>
 
-def multiply(x,y):
-   try:
-      float_x, float_y = float(x), float(y)
-   except:
-      return 0
-   return float_x * float_y
-
-sajax1.sajax_init()
-sajax1.sajax_export(multiply)
-sajax1.sajax_handle_client_request()
-
-print """
 <html>
 <head>
-	<title>PyMultiplier</title>
+	<title>Multiplier</title>
 	<script>
-"""
-sajax1.sajax_show_javascript()
-print """
+	<cfscript>sajax_show_javascript();</cfscript>
+	
 	function do_multiply_cb(z) {
 		document.getElementById("z").value = z;
 	}
+	
 	function do_multiply() {
+		// get the folder name
 		var x, y;
-
+		
 		x = document.getElementById("x").value;
 		y = document.getElementById("y").value;
 		x_multiply(x, y, do_multiply_cb);
 	}
 	</script>
+	
 </head>
 <body>
 	<input type="text" name="x" id="x" value="2" size="3">
@@ -43,4 +42,3 @@ print """
 		onclick="do_multiply(); return false;">
 </body>
 </html>
-""" % locals()

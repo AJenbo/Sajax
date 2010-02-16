@@ -6,6 +6,12 @@ import os
 
 import sajax1
 
+WALLFILE = '/tmp/wall.html'
+
+if not os.path.exists(WALLFILE):
+   fh = open(WALLFILE, 'w')
+   fh.close()
+
 def colourify_ip(ip):
    colour = ''.join(['%02x' % int(part) for part in ip.split('.')[-3:]])
    return colour
@@ -23,9 +29,9 @@ def refresh():
    f = open("/tmp/wall.html")
    return '\n'.join(list(f)[-25:])
    
-sajax1.init()
-sajax1.export(refresh, add_line)
-sajax1.handle_client_request()
+sajax1.sajax_init()
+sajax1.sajax_export(refresh, add_line)
+sajax1.sajax_handle_client_request()
 
 print """
 <html>
@@ -33,7 +39,7 @@ print """
 	<title>PyWall</title>
 	<script>
 """
-sajax1.show_javascript()
+sajax1.sajax_show_javascript()
 print """
 	var check_n = 0;
 	

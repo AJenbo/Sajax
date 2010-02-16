@@ -1,0 +1,13 @@
+SAJAX TO DO LIST
+----------------
+* Make the whole darn thing an object
+* Encode array elements
+* Fix Perl module (with the contributed code)
+* Add J2EE module
+
+THINGS THAT WERE TO DO AND ARE NOW TO DONE
+------------------------------------------
+* Added sajax_set_remote_url or something along those lines instead of
+  $REQUEST_URI
+* Support POST
+* Add CFML, ASP.Net

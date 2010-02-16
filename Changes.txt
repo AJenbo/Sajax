@@ -1,6 +1,20 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.10 (March 21, 2005)
+
+* [php] Support for POST instead of just GET. Set $sajax_request_type.
+        Based on code from Folletto Malefico, to whom I owe thanks.
+        POST mode should be used if you are sending long requests (more
+        than 512 bytes) or if you are modifying data with the request.
+* [php] (untested) Support for GET/POST to pages other than $REQUEST_URI.
+  		Set $sajax_remote_uri to the desired URL to get this behavior.
+* [php] Small fixes to the Wall example, thanks to Leonardo Lorieri 
+		and Jesse Sightler.
+* [cf] Cold Fusion MX support (Thanks Eric Moritz)
+* [asp] ASP support (Thanks Jared Nuzzolillo)
+* [python] Improvements to the Python backend from Adam Collard
+
 Sajax version 0.9 (March 15, 2005)
 
 * [php] Major changes to the PHP backend: 

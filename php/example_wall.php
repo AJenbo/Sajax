@@ -26,16 +26,13 @@
 	}
 	
 	function refresh() {
-		$f = fopen("/tmp/wall.html", "r");
-		$lines = array();
-		while (!feof($f)) 
-			$lines[] = fgets($f, 8192);
+		$lines = file("/tmp/wall.html");
 		// return the last 25 lines
 		return join("\n", array_slice($lines, -25));
 	}
 	
+	$sajax_request_type = "GET";
 	sajax_init();
-	// $sajax_debug_mode = 1;
 	sajax_export("add_line", "refresh");
 	sajax_handle_client_request();
 	
@@ -85,6 +82,7 @@
 </head>
 <body onload="refresh();">
 
+<form name="f" action="#" onsubmit="add();return false;">
 	<a href="http://www.modernmethod.com/sajax">Sajax</a>
 	- 
 	This example illustrates the simplest possible graffiti wall.
@@ -99,6 +97,7 @@
 		onclick="add(); return false;">
 	<div id="wall"></div>
 	<div id="status"><em>Loading..</em></div>
+</form>
 	
 </body>
 </html>

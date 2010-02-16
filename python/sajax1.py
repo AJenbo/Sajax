@@ -8,52 +8,52 @@ import urllib
 
 print "Content-type: text/html"
 
-debug_mode = False
-export_list = {}
-js_has_been_shown = False
+sajax_debug_mode = False
+sajax_export_list = {}
+sajax_js_has_been_shown = False
 
 form = cgi.FieldStorage()
 
-def init():
+def sajax_init():
    pass
    
-def handle_client_request():
+def sajax_handle_client_request():
    func_name = form.getfirst('rs')
    if func_name is None:
       return
       
    # Bust cache in the head
    print "Expires: Mon, 26 Jul 1997 05:00:00 GMT"  
-   print "Last-Modified: %s GMT" % datetime.datetime.utcnow().strftime("%a, %d %m %H:%M:%S")# always modified
+   print "Last-Modified: %s GMT" % datetime.datetime.utcnow().strftime(
+                                                      "%a, %d %m %H:%M:%S")
+   # always modified
    print "Cache-Control: no-cache, must-revalidate" # HTTP/1.1
    print "Pragma: no-cache"                         # HTTP/1.0
    print
    
-   if not func_name in export_list:
+   if not func_name in sajax_export_list:
       print "-:%s not callable" % func_name
    else:
       print "+:",
       rsargs = form.getlist('rsargs[]')
-      result = export_list[func_name](*rsargs)
+      result = sajax_export_list[func_name](*rsargs)
       print result
    sys.exit()
       
-def show_common_js():
-   js_debug_mode = str(debug_mode).lower()
-   print """\
-   	// remote scripting library
+def sajax_get_common_js():
+   sajax_debug_modeJS = str(sajax_debug_mode).lower()
+   return """\
+                // remote scripting library
 		// (c) copyright 2005 modernmethod, inc
-		var rs_debug_mode = %(js_debug_mode)s;
-		var rs_obj = false;
-		var rs_callback = false;
+		var sajax_debug_mode = %(sajax_debug_modeJS)s;
 		
-		function rs_debug(text) {
-			if (rs_debug_mode)
+		function sajax_debug(text) {
+			if (sajax_debug_mode)
 				alert("RSD: " + text)
 		}
 		
- 		function rs_init_object() {
- 			rs_debug("rs_init_object() called..")
+ 		function sajax_init_object() {
+ 			sajax_debug("sajax_init_object() called..")
  			
  			var A;
 			try {
@@ -68,63 +68,82 @@ def show_common_js():
 			if(!A && typeof XMLHttpRequest != "undefined")
 				A = new XMLHttpRequest();
 			if (!A)
-				rs_debug("Could not create connection object.");
+				sajax_debug("Could not create connection object.");
 			return A;
 		}
+		function sajax_do_call(func_name, url, args) {
+			var i, x, n;
+			for (i = 0; i < args.length-1; i++) 
+				url = url + "&rsargs[]=" + escape(args[i]);
+			url = url + "&rsrnd=" + new Date().getTime();
+			x = sajax_init_object();
+			x.open("GET", url, true);
+			x.onreadystatechange = function() {
+				if (x.readyState != 4) 
+					return;
+				sajax_debug("received " + x.responseText);
+				
+				var status;
+				var data;
+				status = x.responseText.charAt(0);
+				data = x.responseText.substring(2);
+				if (status == "-") 
+					alert("Error: " + data);
+				else  
+					args[args.length-1](data);
+			}
+			x.send(null);
+			sajax_debug(func_name + " url = " + url);
+			sajax_debug(func_name + " waiting..");
+			delete x;
+		}                
    """ % locals()
-   
 
-def escape(val):
+def sajax_show_common_js():
+   print sajax_get_common_js()
+
+def sajax_esc(val):
    return val.replace('"', '\\\\"')	
 
-def show_one(func_name):
-   uri = os.environ['REQUEST_URI']
-   if uri.find('?') == -1:
-      uri += "?rs=%s" % urllib.quote_plus(func_name)
+def sajax_get_one_stub(func_name):
+   uri = os.environ['SCRIPT_NAME']
+   if os.environ.has_key('QUERY_STRING'):
+      uri += "?" + os.environ['QUERY_STRING'] + "&rs=%s" % urllib.quote_plus(func_name)
    else:
-      uri += "&rs=%s" % urllib.quote_plus(func_name)
-   escapeduri = escape(uri)
-   print """
+      uri += "?rs=%s" % urllib.quote_plus(func_name)
+      
+   escapeduri = sajax_esc(uri)
+   return """
    // wrapper for %(func_name)s
    function x_%(func_name)s(){
       // count args; build URL
-      	var i, x, n;
-      	var url = "%(escapeduri)s", a = x_%(func_name)s.arguments;
-      	for (i = 0; i < a.length-1; i++) 
-      		url = url + "&rsargs[]=" + escape(a[i]);
-      	x = rs_init_object();
-      	x.open("GET", url, true);
-      	x.onreadystatechange = function() {
-      		if (x.readyState != 4) 
-      			return;
-      		rs_debug("received " + x.responseText);
-      		
-      		var status;
-      		var data;
-      		status = x.responseText.charAt(0);
-      		data = x.responseText.substring(2);
-      		if (status == "-") 
-      			alert("Error: " + callback_n);
-      		else  
-      			a[a.length-1](data);
-      	}
-      	x.send(null);
-      	rs_debug("x_%(func_name)s url = " + url);
-      	rs_debug("x_%(func_name)s waiting..");
+      
+      sajax_do_call("%(func_name)s",
+                    "%(escapeduri)s",
+                    x_%(func_name)s.arguments);
       }
       
       """ % locals()
 
-def export(*args):
-   decorated = [(f.func_name, f) for f in args]
-   export_list.update(dict(decorated))
-     
-def show_javascript():
-   global js_has_been_shown
-   if not js_has_been_shown:
-      show_common_js()
-      js_has_been_shown = True
-   
-   for func_name in export_list.iterkeys():
-      show_one(func_name)
+def sajax_show_one_stub(func_name):
+   print sajax_get_one_stub(func_name)
 
+def sajax_export(*args):
+   decorated = [(f.func_name, f) for f in args]
+   sajax_export_list.update(dict(decorated))
+     
+def sajax_get_javascript():
+   global sajax_js_has_been_shown
+
+   html = ''
+   if not sajax_js_has_been_shown:
+      html += sajax_get_common_js()
+      sajax_js_has_been_shown = True
+   
+   for func_name in sajax_export_list.iterkeys():
+      html += sajax_get_one_stub(func_name)
+
+   return html
+
+def sajax_show_javascript():
+   print sajax_get_javascript()
