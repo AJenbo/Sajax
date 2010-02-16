@@ -1,24 +1,29 @@
-<?
-	require("Sajax.php");
-	
-	function multiply($x, $y) {
-		return $x * $y;
-	}
-	
-	sajax_init();
-	// $sajax_debug_mode = 1;
-	sajax_export("multiply");
-	sajax_handle_client_request();
-	
-?>
+#!/usr/bin/env ioServer
+
+c := CGI clone
+
+multiply := method(x, y,
+	x := x asNumber
+	y := y asNumber
+	return x * y
+)
+
+s := Sajax clone
+s debug_mode := 1
+s init
+s export("multiply")
+s handle_client_request
+
+write("Content-type: text/html\n\n")
+
+html := """
 <html>
 <head>
 	<title>Multiplier</title>
-	<script>
-	<?
-	sajax_show_javascript();
-	?>
-	
+	<script>"""
+write(html)
+s show_javascript
+html := """
 	function do_multiply_cb(z) {
 		document.getElementById("z").value = z;
 	}
@@ -44,3 +49,5 @@
 		onclick="do_multiply(); return false;">
 </body>
 </html>
+"""
+write(html)

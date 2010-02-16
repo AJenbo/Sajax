@@ -1,14 +1,14 @@
 <?php	
-if (!isset($INCL_REMOTE_SCRIPTING)) {
+if (!isset($SAJAX_INCLUDED)) {
 
-	$rs_debug_mode = 0;
-	$rs_export_list = array();
+	$sajax_debug_mode = 0;
+	$sajax_export_list = array();
 	
-	function rs_init() {
+	function sajax_init() {
 	}
 	
-	function rs_handle_client_request() {
-		global $rs_export_list;
+	function sajax_handle_client_request() {
+		global $sajax_export_list;
 		
 		if (empty($_GET["rs"])) 
 			return;
@@ -21,7 +21,7 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 		header ("Pragma: no-cache");                          // HTTP/1.0
 			
 		$func_name = $_GET["rs"];
-		if (! in_array($func_name, $rs_export_list))
+		if (! in_array($func_name, $sajax_export_list))
 			echo "-:$func_name not callable";
 		else {
 			echo "+:";
@@ -34,21 +34,22 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 		exit;
 	}
 	
-	function rs_show_common_js() {
-		global $rs_debug_mode;
+	function sajax_get_common_js() {
+		global $sajax_debug_mode;
 		
+		ob_start();
 		?>
 		
 		// remote scripting library
 		// (c) copyright 2005 modernmethod, inc
-		var rs_debug_mode = <?php echo $rs_debug_mode ? "true" : "false"; ?>;
+		var sajax_debug_mode = <?php echo $sajax_debug_mode ? "true" : "false"; ?>;
 		
-		function rs_debug(text) {
-			if (rs_debug_mode)
+		function sajax_debug(text) {
+			if (sajax_debug_mode)
 				alert("RSD: " + text)
 		}
- 		function rs_init_object() {
- 			rs_debug("rs_init_object() called..")
+ 		function sajax_init_object() {
+ 			sajax_debug("sajax_init_object() called..")
  			
  			var A;
 			try {
@@ -63,19 +64,53 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			if(!A && typeof XMLHttpRequest != "undefined")
 				A = new XMLHttpRequest();
 			if (!A)
-				rs_debug("Could not create connection object.");
+				sajax_debug("Could not create connection object.");
 			return A;
 		}
+		function sajax_do_call(func_name, url, args) {
+			var i, x, n;
+			for (i = 0; i < args.length-1; i++) 
+				url = url + "&rsargs[]=" + escape(args[i]);
+			url = url + "&rsrnd=" + new Date().getTime();
+			x = sajax_init_object();
+			x.open("GET", url, true);
+			x.onreadystatechange = function() {
+				if (x.readyState != 4) 
+					return;
+				sajax_debug("received " + x.responseText);
+				
+				var status;
+				var data;
+				status = x.responseText.charAt(0);
+				data = x.responseText.substring(2);
+				if (status == "-") 
+					alert("Error: " + data);
+				else  
+					args[args.length-1](data);
+			}
+			x.send(null);
+			sajax_debug(func_name + " url = " + url);
+			sajax_debug(func_name + " waiting..");
+			delete x;
+		}
+		
 		<?php
+		$html = ob_get_contents();
+		ob_end_clean();
+		return $html;
+	}
+	
+	function sajax_show_common_js() {
+		echo sajax_get_common_js();
 	}
 	
 	// javascript escape a value
-	function rs_esc($val)
+	function sajax_esc($val)
 	{
 		return str_replace('"', '\\\\"', $val);
 	}
-	
-	function rs_show_one($func_name) {
+
+	function sajax_get_one_stub($func_name) {
 		global $REQUEST_URI;
 		
 		$uri = $REQUEST_URI;
@@ -83,68 +118,61 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			$uri .= "?rs=".urlencode($func_name);
 		else
 			$uri .= "&rs=".urlencode($func_name);
-			
+		
+		ob_start();	
 		?>
 		
 		// wrapper for <?php echo $func_name; ?>
 		
 		function x_<?php echo $func_name; ?>() {
 			// count args; build URL
-			var i, x, n;
-			var url = "<?php echo rs_esc($uri); ?>";
-			var a = x_<?php echo $func_name; ?>.arguments;
-			for (i = 0; i < a.length-1; i++) 
-				url = url + "&rsargs[]=" + escape(a[i]);
-			url = url + "&rsrnd=" + new Date().getTime();
-			x = rs_init_object();
-			x.open("GET", url, true);
-			x.onreadystatechange = function() {
-				if (x.readyState != 4) 
-					return;
-				rs_debug("received " + x.responseText);
-				
-				var status;
-				var data;
-				status = x.responseText.charAt(0);
-				data = x.responseText.substring(2);
-				if (status == "-") 
-					alert("Error: " + callback_n);
-				else  
-					a[a.length-1](data);
-			}
-			x.send(null);
-			rs_debug("x_<?php echo $func_name; ?> url = " + url);
-			rs_debug("x_<?php echo $func_name; ?> waiting..");
-			delete x;
+			
+			sajax_do_call("<?php echo $func_name; ?>",
+				"<?php echo sajax_esc($uri); ?>",
+				x_<?php echo $func_name; ?>.arguments);
 		}
 		
 		<?php
+		$html = ob_get_contents();
+		ob_end_clean();
+		return $html;
 	}
 	
-	function rs_export() {
-		global $rs_export_list;
+	function sajax_show_one_stub($func_name) {
+		echo sajax_get_one_stub($func_name);
+	}
+	
+	function sajax_export() {
+		global $sajax_export_list;
 		
 		$n = func_num_args();
 		for ($i = 0; $i < $n; $i++) {
-			$rs_export_list[] = func_get_arg($i);
+			$sajax_export_list[] = func_get_arg($i);
 		}
 	}
 	
-	$rs_js_has_been_shown = 0;
-	function rs_show_javascript()
-	{	
-		global $rs_js_has_been_shown;
-		global $rs_export_list;
+	$sajax_js_has_been_shown = 0;
+	function sajax_get_javascript()
+	{
+		global $sajax_js_has_been_shown;
+		global $sajax_export_list;
 		
-		if (! $rs_js_has_been_shown) {
-			rs_show_common_js();
-			$rs_js_has_been_shown = 1;
+		$html = "";
+		if (! $sajax_js_has_been_shown) {
+			$html .= sajax_get_common_js();
+			$sajax_js_has_been_shown = 1;
 		}
-		foreach ($rs_export_list as $func) {
-			rs_show_one($func);
+		foreach ($sajax_export_list as $func) {
+			$html .= sajax_get_one_stub($func);
 		}
+		return $html;
 	}
 	
-	$INCL_REMOTE_SCRIPTING = 1;
+	function sajax_show_javascript()
+	{
+		echo sajax_get_javascript();
+	}
+	
+	$SAJAX_INCLUDED = 1;
 }
 ?>

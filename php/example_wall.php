@@ -1,5 +1,5 @@
 <?
-	require("incl_sajax.php");
+	require("Sajax.php");
 	
 	//
 	// The world's least efficient wall implementation
@@ -34,10 +34,10 @@
 		return join("\n", array_slice($lines, -25));
 	}
 	
-	rs_init();
-	// $rs_debug_mode = 1;
-	rs_export("add_line", "refresh");
-	rs_handle_client_request();
+	sajax_init();
+	// $sajax_debug_mode = 1;
+	sajax_export("add_line", "refresh");
+	sajax_handle_client_request();
 	
 ?>
 <html>
@@ -50,7 +50,7 @@
 	</style>
 	<script>
 	<?
-	rs_show_javascript();
+	sajax_show_javascript();
 	?>
 	
 	var check_n = 0;

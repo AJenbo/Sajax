@@ -127,6 +127,7 @@ sub rs_show_one {
 	var url = "$urie", a = x_$func_name.arguments;
 	for (i = 0; i < a.length-1; i++) 
 	    url = url + "&rsargs=" + escape(a[i]);
+	url = url.replace( /[+]/g, '%2B'); // fix the unescaped plus signs 
 	x = rs_init_object();
 	x.open("GET", url, true);
 	x.onreadystatechange = function() {

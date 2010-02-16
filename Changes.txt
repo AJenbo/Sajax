@@ -1,6 +1,20 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.9 (March 15, 2005)
+
+* [php] Major changes to the PHP backend: 
+* [php] Renamed incl_sajax.php to Sajax.php to fit PEAR and other language
+		naming conventions
+* [php] Functions and vars previously named rs_* are now sajax_*
+* [php] Function stubs all call one generalized sajax_do_call() dispatcher
+* [php] Added non-echoing version of sajax_echo_javascript() called
+		sajax_get_javascript via the magic of output buffering
+* [php] Changed all examples to support new framework
+* [perl] Applied fix for URL encoding of space (Thanks Max Maischein)
+* [ruby] Added Ruby backend contributed by anonymous author
+* [io] Added Io (http://www.iolanguage.com/) backend by Sajax team @ MM
+
 Sajax version 0.8 (March 9, 2005)
 
 * [php] Bug in the long-open-tags changes. Thanks to Matthew M. Vince.
