@@ -1,14 +1,27 @@
 <?
 	require("incl_sajax.php");
 	
-	// the world's least efficient wall
+	//
+	// The world's least efficient wall implementation
+	//
+	
+	function colorify_ip($ip)
+	{
+		$parts = explode(".", $ip);
+		$color = sprintf("%02s", dechex($parts[1])) .
+				 sprintf("%02s", dechex($parts[2])) .
+				 sprintf("%02s", dechex($parts[3]));
+		return $color;
+	}
+	
 	function add_line($msg) {
-		
 		$f = fopen("/tmp/wall.html", "a");
 		$dt = date("Y-m-d h:i:s");
-		$msg = strip_tags($msg);
+		$msg = strip_tags(stripslashes($msg));
 		$remote = $_SERVER["REMOTE_ADDR"];
-		fwrite($f, "<!-- $remote --><b>$dt</b> $msg<br>\n");
+		// generate unique-ish color for IP
+		$color = colorify_ip($remote);
+		fwrite($f, "<!-- $remote --><span style=\"color:#$color\">$dt</span> $msg<br>\n");
 		fclose($f);
 	}
 	
@@ -17,7 +30,7 @@
 		$lines = array();
 		while (!feof($f)) 
 			$lines[] = fgets($f, 8192);
-		// return the last 15 lines
+		// return the last 25 lines
 		return join("\n", array_slice($lines, -25));
 	}
 	
@@ -30,14 +43,21 @@
 <html>
 <head>
 	<title>Wall</title>
+	<style>
+	.date { 
+		color: blue;
+	}
+	</style>
 	<script>
 	<?
 	rs_show_javascript();
 	?>
 	
+	var check_n = 0;
+	
 	function refresh_cb(new_data) {
 		document.getElementById("wall").innerHTML = new_data;
-		document.getElementById("status").innerHTML = "Checked";
+		document.getElementById("status").innerHTML = "Checked #" + check_n++;
 		setTimeout("refresh()", 1000);
 	}
 	

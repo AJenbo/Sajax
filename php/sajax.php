@@ -12,6 +12,13 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 		
 		if (empty($_GET["rs"])) 
 			return;
+
+		// Bust cache in the head
+		header ("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
+		header ("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		// always modified
+		header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+		header ("Pragma: no-cache");                          // HTTP/1.0
 			
 		$func_name = $_GET["rs"];
 		if (! in_array($func_name, $rs_export_list))
@@ -84,6 +91,7 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			var url = "<?= rs_esc($uri); ?>", a = x_<?= $func_name; ?>.arguments;
 			for (i = 0; i < a.length-1; i++) 
 				url = url + "&rsargs[]=" + escape(a[i]);
+			url = url + "&rsrnd=" + new Date().getTime();
 			x = rs_init_object();
 			x.open("GET", url, true);
 			x.onreadystatechange = function() {
