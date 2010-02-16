@@ -32,8 +32,6 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 		// remote scripting library
 		// (c) copyright 2005 modernmethod, inc
 		var rs_debug_mode = <?= $rs_debug_mode ? "true" : "false"; ?>;
-		var rs_obj = false;
-		var rs_callback = false;
 		
 		function rs_debug(text) {
 			if (rs_debug_mode)
@@ -105,6 +103,7 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			x.send(null);
 			rs_debug("x_<?= $func_name; ?> url = " + url);
 			rs_debug("x_<?= $func_name; ?> waiting..");
+			delete x;
 		}
 		
 		<?
