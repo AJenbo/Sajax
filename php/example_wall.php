@@ -1,9 +1,8 @@
-<?
-	require("Sajax.php");
-	
+<?php
 	//
 	// The world's least efficient wall implementation
 	//
+	require("Sajax.php");
 	
 	function colorify_ip($ip)
 	{
@@ -34,8 +33,7 @@
 	$sajax_request_type = "GET";
 	sajax_init();
 	sajax_export("add_line", "refresh");
-	sajax_handle_client_request();
-	
+	sajax_handle_client_request();	
 ?>
 <html>
 <head>
@@ -90,8 +88,11 @@
 <body onload="refresh();">
 
 <form name="f" action="#" onsubmit="add();return false;">
-	<a href="http://www.modernmethod.com/sajax">Sajax</a>
-	- 
+	<b><a href="http://www.modernmethod.com/sajax">Sajax</a>
+	v<?= $sajax_version; ?></b>
+	-
+	You are a guinea pig
+	-
 	This example illustrates the simplest possible graffiti wall.
 	It isn't meant to be perfect, featureful, or even useful.<br/>
 	

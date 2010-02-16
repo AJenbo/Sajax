@@ -1,4 +1,3 @@
-SAJAX ASP(JScript) BACKEND
---------------------------
+ASP support has been temporarily removed due to bugs. It will be back soon.
 
-Contributed and copyighted by Jared Nuzzolillo (http://www.protoscript.net/).
+- tlack

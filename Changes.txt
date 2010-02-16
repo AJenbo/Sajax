@@ -1,6 +1,12 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.12 (January 30, 2006)
+
+* [php] Numerous improvements to serialization, support for varied PHP
+	setups, addition of sajax_cancel().
+* [asp] Removed due to serious bugs
+
 Sajax version 0.10 (March 21, 2005)
 
 * [php] Support for POST instead of just GET. Set $sajax_request_type.
