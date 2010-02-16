@@ -1,5 +1,5 @@
-<?php
-	date_default_timezone_set('Europe/Copenhagen');
+<cfinclude template="sajax.cfm">
+<cfscript>
 	function test_get() {
 		return test();
 	}
@@ -9,37 +9,54 @@
 	}
 	
 	function test() {
-		$s = "URI: ".$_SERVER['PHP_SELF'];
-		$s .= "\n\n-- GET --\n";
-		if(!empty($_GET["rsargs"]))
-			$s .= $_GET["rsargs"];
+		s = "URI: example_options.cfm";
+		s = "#s#
+-- GET --
+";
+		if(isdefined("URL.rsargs"))
+			s = "#s##URL.rsargs#";
+		s = "#s#
+
+-- POST --
+";
+		if(isdefined("FORM.rsargs"))
+			s = "#s##FORM.rsargs#";
 		
-		$s .= "\n-- POST --\n";
-		if(!empty($_POST["rsargs"]))
-			$s .= $_POST["rsargs"];
-		
-		return $s;
+		return s;
 	}
 	
 	function get_the_time() {
-		return date("Y-m-d h:i:s");
+		return "#DateFormat(now(),"yyyy-mm-dd ")##TimeFormat(now() ,"HH:mm:ss")#";
 	}
 	
-	require_once("sajax.php");
+	function pause(sec) {
+		thread = CreateObject("java", "java.lang.Thread");
+		thread.sleep(sec*1000);
+	}
+
 //	$sajax_debug_mode = true;
-	$sajax_failure_redirect = "http://sajax.info/sajaxfail.html";
-	sajax_export(
-		array("name" => "test_get", "method" => "GET"),
-		array("name" => "test_post", "method" => "POST"),
-		array("name" => "get_the_time", "method" => "GET"),
-		array("name" => "test", "method" => "GET"),
-		array("name" => "sleep", "asynchronous" => false),
-		array("name" => "otherefucntion", "uri" => "example_otheruri.php"),
-		array("name" => "otherefucntion2")
-	);
+
+	//GET functions
+	sajax_request_type = "GET";
+	sajax_export("test_get", "get_the_time", "test", "otherefucntion2");
+	
+	//POST functions
+	sajax_request_type = "POST";
+	sajax_export("test_post");
+
+	//synchronous GET functions
+	sajax_request_type = "GET";
+	sajax_request_asynchronous = "false";
+	sajax_export("pause");
+
+	//GET functions from a different uri
+	sajax_request_type = "GET";
+	sajax_remote_uri = "example_otheruri.cfm";
+	sajax_export("otherefucntion");
+	
 	sajax_handle_client_request();
 	
-?>
+</cfscript>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -50,7 +67,7 @@
 <script type="text/javascript" src="json_parse_state.js"></script>
 <script type="text/javascript" src="sajax.js"></script>
 <script type="text/javascript"><!--
-	<?php sajax_show_javascript(); ?>
+	<cfscript>sajax_show_javascript();</cfscript>
 	function print_result(v) {
 		alert(v);
 	}
@@ -71,13 +88,13 @@
 <button onclick="sajax_target_id = 'time'; x_get_the_time(); sajax_target_id = '';">Test updating IDs</button>
 
 <!-- Calling a synchronous will cause the script to wait for the responce -->
-<button onclick="x_sleep(3, function(){}); alert('Link was clicked!');">Test synchronous</button>
+<button onclick="x_pause(3, function(){}); alert('Link was clicked!');">Test synchronous</button>
 
 <!-- Different URI set at config -->
 <button onclick="x_otherefucntion(print_result);">Call to other uri.</button>
 
 <!-- Forece different URI at runtime -->
-<button onclick="sajax_remote_uri = 'example_otheruri.php'; x_otherefucntion2(print_result); sajax_remote_uri = '';">Force call to other uri.</button>
+<button onclick="sajax_remote_uri = 'example_otheruri.cfm'; x_otherefucntion2(print_result); sajax_remote_uri = '';">Force call to other uri.</button>
 <div id="time"><em>Time will appear here</em></div>
 </body>
 </html>

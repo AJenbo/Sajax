@@ -1,11 +1,25 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.13 (August 26, 2009)
+
+* [php] Use php native json_encode for serilization of responce data.
+* [php] use of JSON.parse on client side for better speed and security.
+* [php] per function GET/POST
+* [php] Autoselect POST if request is to large data for GET
+* [php] Synchronous mode
+* [php] gratly improved error handeling on both client and server side
+* [php] Support for utf-8 and international charectors
+* [php] Better handeling of IE (no more warnings in IE7+)
+* [cf] Updated to match the PHP implementation.
+
 Sajax version 0.12 (January 30, 2006)
 
 * [php] Numerous improvements to serialization, support for varied PHP
 	setups, addition of sajax_cancel().
 * [asp] Removed due to serious bugs
+
+Sajax version 0.11 () Unreleased beta.
 
 Sajax version 0.10 (March 21, 2005)
 
@@ -53,4 +67,3 @@ Sajax version 0.6 (March 8, 2005)
 * [python] Backend port added. Thanks to Adam Collard. Please note that
   this port is licensed under the Creative Commons "By" License version
   2.0. 
-

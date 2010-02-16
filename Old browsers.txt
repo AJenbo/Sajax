@@ -1,0 +1,10 @@
+Mozila 0.6 - 0.9.2 might be posible to geat to work but may requre major rewrite as it does not support x.readyState or x.onreadystatechange and probably othere parts of XMLHttpRequest, an alternative would be using iframe's. Also JSON.stringify() seams to fail for it.
+
+
+IE 4 is also posible but it requres removing all try{} catch(e) {} from the code, only using 'Microsoft.XMLHTTP' for IE6, IE5.5, IE5 and IE4 and having less error handeling. and might break support for othere browsers and or functionality. In addition I think it would requre some special case of installed updates on the client end. If you do get it to work feel free to end us the code and we will include it in this file for the next version of Sajax.
+
+
+iCab 3.0 - 3.0.4 are untested, please report your results.
+
+
+Google Chrom is untested except for 2.0.172.39

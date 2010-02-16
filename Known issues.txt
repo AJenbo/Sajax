@@ -1,0 +1,13 @@
+iCab 3.0.5 will fail badly when using json_parse_state and receving large stings.
+
+IE 5.01 will fail nicly when using json_parse.
+
+Safari 1.2 will send malformed data when using json2.stringify and sending numberes as strings.
+
+Prototype 1.5.1 and later, 1.6.0.3 is the latest at this point, breaks firefox's JSON.stringify(), a workaround for this is to use the methode provided by Prototype instead, to this, include the folowing code just after you load prototype.js
+<script type="text/javascript"><!--
+var JSON = JSON || {};
+JSON.stringify = function(value) { return value.toJSON(); };
+JSON.parse = JSON.parse || function(jsonsring) { return jsonsring.evalJSON(true); };
+//-->
+</script>
