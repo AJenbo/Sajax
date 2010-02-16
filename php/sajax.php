@@ -66,7 +66,7 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 				rs_debug("Could not create connection object.");
 			return A;
 		}
-		<?
+		<?php
 	}
 	
 	// javascript escape a value
@@ -114,11 +114,11 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			}
 			x.send(null);
 			rs_debug("x_<?php echo $func_name; ?> url = " + url);
-			rs_debug("x_<?php $func_name; ?> waiting..");
+			rs_debug("x_<?php echo $func_name; ?> waiting..");
 			delete x;
 		}
 		
-		<?
+		<?php
 	}
 	
 	function rs_export() {
