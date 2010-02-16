@@ -1,6 +1,11 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.8 (March 9, 2005)
+
+* [php] Bug in the long-open-tags changes. Thanks to Matthew M. Vince.
+* [lua] Backend port added. Thanks to Javier Guerra. 
+
 Sajax version 0.7 (March 9, 2005)
 
 * [php] Major bug calling remote functions without args.
