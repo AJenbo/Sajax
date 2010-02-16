@@ -21,7 +21,7 @@
 		$remote = $_SERVER["REMOTE_ADDR"];
 		// generate unique-ish color for IP
 		$color = colorify_ip($remote);
-		fwrite($f, "<!-- $remote --><span style=\"color:#$color\">$dt</span> $msg<br>\n");
+		fwrite($f, "<span style=\"color:#$color\">$dt</span> $msg<br>\n");
 		fclose($f);
 	}
 	
@@ -75,6 +75,8 @@
 		var handle;
 		handle = document.getElementById("handle").value;
 		line = document.getElementById("line").value;
+		if (line == "") 
+			return;
 		x_add_line("[" + handle + "] " + line, add_cb);
 		document.getElementById("line").value = "";
 	}
@@ -83,6 +85,11 @@
 </head>
 <body onload="refresh();">
 
+	<a href="http://www.modernmethod.com/sajax">Sajax</a>
+	- 
+	This example illustrates the simplest possible graffiti wall.
+	It isn't meant to be perfect, featureful, or even useful.<br/>
+	
 	<input type="text" name="handle" id="handle" value="(name)"
 		onfocus="this.select()" style="width:130px;">
 	<input type="text" name="line" id="line" value="(enter your message here)"

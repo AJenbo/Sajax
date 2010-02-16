@@ -1,4 +1,4 @@
-<?	
+<?php	
 if (!isset($INCL_REMOTE_SCRIPTING)) {
 
 	$rs_debug_mode = 0;
@@ -25,7 +25,10 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			echo "-:$func_name not callable";
 		else {
 			echo "+:";
-			$result = call_user_func_array($_GET["rs"], $_GET["rsargs"]);
+			if (empty($_GET["rsargs"])) 
+				$result = call_user_func($_GET["rs"]);
+			else
+				$result = call_user_func_array($_GET["rs"], $_GET["rsargs"]);
 			echo $result;
 		}
 		exit;
@@ -38,7 +41,7 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 		
 		// remote scripting library
 		// (c) copyright 2005 modernmethod, inc
-		var rs_debug_mode = <?= $rs_debug_mode ? "true" : "false"; ?>;
+		var rs_debug_mode = <?php echo $rs_debug_mode ? "true" : "false"; ?>;
 		
 		function rs_debug(text) {
 			if (rs_debug_mode)
@@ -83,12 +86,13 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 			
 		?>
 		
-		// wrapper for <?= $func_name; ?>
+		// wrapper for <?php echo $func_name; ?>
 		
-		function x_<?= $func_name; ?>() {
+		function x_<?php echo $func_name; ?>() {
 			// count args; build URL
 			var i, x, n;
-			var url = "<?= rs_esc($uri); ?>", a = x_<?= $func_name; ?>.arguments;
+			var url = "<?php echo rs_esc($uri); ?>";
+			var a = x_<?php echo $func_name; ?>.arguments;
 			for (i = 0; i < a.length-1; i++) 
 				url = url + "&rsargs[]=" + escape(a[i]);
 			url = url + "&rsrnd=" + new Date().getTime();
@@ -109,8 +113,8 @@ if (!isset($INCL_REMOTE_SCRIPTING)) {
 					a[a.length-1](data);
 			}
 			x.send(null);
-			rs_debug("x_<?= $func_name; ?> url = " + url);
-			rs_debug("x_<?= $func_name; ?> waiting..");
+			rs_debug("x_<?php echo $func_name; ?> url = " + url);
+			rs_debug("x_<?php $func_name; ?> waiting..");
 			delete x;
 		}
 		

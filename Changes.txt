@@ -1,0 +1,13 @@
+SAJAX CHANGELOG
+---------------
+
+Sajax version 0.6 (March 8, 2005)
+
+* Layout of archive changed; base folder changed; subfolders added for backends
+* [php] Used short open tags by default. Thanks to Matthew M. Vince.
+* [perl] Backend port added. Thanks to Nathan Schmidt, Jason Purdy and Nate
+  Mueller.
+* [python] Backend port added. Thanks to Adam Collard. Please note that
+  this port is licensed under the Creative Commons "By" License version
+  2.0. 
+
