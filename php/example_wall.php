@@ -51,11 +51,17 @@
 	?>
 	
 	var check_n = 0;
+	var old_data = "--";
 	
-	function refresh_cb(new_data) {
-		document.getElementById("wall").innerHTML = new_data;
+	function refresh_cb(new_data) {	
+		if (new_data != old_data) {
+			document.getElementById("wall").innerHTML = new_data;
+			setTimeout("refresh()", 1000);
+			old_data = new_data;
+		} else {
+			setTimeout("refresh()", 2500);
+		}
 		document.getElementById("status").innerHTML = "Checked #" + check_n++;
-		setTimeout("refresh()", 1000);
 	}
 	
 	function refresh() {
@@ -74,6 +80,7 @@
 		line = document.getElementById("line").value;
 		if (line == "") 
 			return;
+		sajax_request_type = "POST";
 		x_add_line("[" + handle + "] " + line, add_cb);
 		document.getElementById("line").value = "";
 	}

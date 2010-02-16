@@ -1,9 +1,11 @@
 SAJAX TO DO LIST
 ----------------
+* Support for "options" such as post-to-an-ID and POST/GET submit.
+* Return false if the object could not be created.
 * Make the whole darn thing an object
-* Encode array elements
-* Fix Perl module (with the contributed code)
+* Encode/serialize array elements
 * Add J2EE module
+* Apply Julien Grossiord's port non-80 patch.
 
 THINGS THAT WERE TO DO AND ARE NOW TO DONE
 ------------------------------------------
@@ -11,3 +13,4 @@ THINGS THAT WERE TO DO AND ARE NOW TO DONE
   $REQUEST_URI
 * Support POST
 * Add CFML, ASP.Net
+* Fix Perl module (with the contributed code)
