@@ -3,6 +3,7 @@ SAJAX CHANGELOG
 
 Sajax version 0.14 (November 12, 2016)
 
+* [php] Optionaly allow for broser caching via Sajax\Sajax::handleClientRequest(false);
 * [php] Add composer package file
 * [php] Addapt the code to OOP-style following PSR-2 style guide (PHP 5.3.3 now required)
 * [php] Changed input format for export function (see examples)
