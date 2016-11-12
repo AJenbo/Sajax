@@ -1,0 +1,17 @@
+{
+    "name": "ajenbo/sajax",
+    "description": "Simple Ajax Toolkit",
+    "version": "0.14.0",
+    "dist": {
+        "type": "vcs",
+        "url": "https://github.com/AJenbo/Sajax"
+    },
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sajax\\": "php/"
+        }
+    }
+}
