@@ -6,13 +6,11 @@ that makes it easy to expose functions in your code to JavaScript.
 
 For more information about Sajax, please see the homepage:
 
-	http://sajax.info/
+	https://github.com/AJenbo/Sajax
 
 In this archive you will find a folder for each platform that is
 currently supported. Please see individual documentation in each
 folder for specific errata.
-
-
 
 As of 0.13 a JavaScript implementation of JSON.stringify() has
 become a requirement when sending data for browsers that does not

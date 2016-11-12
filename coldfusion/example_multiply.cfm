@@ -5,7 +5,7 @@
 	}
 	
 //	sajax_debug_mode = true;
-	sajax_failure_redirect = "http://sajax.info/sajaxfail.html";
+	sajax_failure_redirect = "/sajaxfail.html";
 	sajax_export("multiply");
 	sajax_handle_client_request();
 	

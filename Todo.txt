@@ -1,18 +1,18 @@
 SAJAX TO DO LIST
 ----------------
-* Fix http://www.modernmethod.com/sajax/forum/viewtopic.php?p=308
-* Make the whole darn thing an object 
 * Add J2EE module
-* Apply Julien Grossiord's port non-80 patch.
 * Apply Steve Smith (ND)'s ColdFusion POST patch.
 * Better whitespace handling
-* Test if a function exists before allowing you to export it
 * Add Kae's IFRAME patch.
 * Add C# support.
-* Update othere backends to match php in 0.13.
+* Update non-PHP back-ends to match 0.14 standard.
 
 THINGS THAT WERE TO DO AND ARE NOW TO DONE
 ------------------------------------------
+* Test if a function exists before allowing you to export it
+* Apply Julien Grossiord's port non-80 patch.
+* Make the whole darn thing an object 
+* Fix http://www.modernmethod.com/sajax/forum/viewtopic.php?p=308
 * All-numeric array indices -> JS array, not object.
 * Encode/serialize array elements
 * Return false if the object could not be created.

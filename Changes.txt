@@ -1,12 +1,17 @@
 SAJAX CHANGELOG
 ---------------
 
+Sajax version 0.14 (November 12, 2016)
+
+* [php] Addapt the code to OOP-style following PSR-2 style guide (PHP 5.3.3 now required)
+* [php] Changed input format for export function (see examples)
+
 Sajax version 0.13 (August 26, 2009)
 
 * [php] Use php native json_encode for serilization of responce data.
 * [php] use of JSON.parse on client side for better speed and security.
 * [php] per function GET/POST
-* [php] Autoselect POST if request is to large data for GET
+* [php] Autoselect POST if request data is to large for GET
 * [php] Synchronous mode
 * [php] gratly improved error handeling on both client and server side
 * [php] Support for utf-8 and international charectors
