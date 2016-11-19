@@ -12,18 +12,18 @@ function test_post()
 
 function test()
 {
-    $s = 'URI: '.$_SERVER['PHP_SELF'];
-    $s .= "\n\n" . '-- GET --' . "\n";
+    $string = 'URI: '.$_SERVER['PHP_SELF'];
+    $string .= "\n\n" . '-- GET --' . "\n";
     if (!empty($_GET['rsargs'])) {
-        $s .= $_GET['rsargs'];
+        $string .= $_GET['rsargs'];
     }
 
-    $s .= "\n" . '-- POST --' . "\n";
+    $string .= "\n" . '-- POST --' . "\n";
     if (!empty($_POST['rsargs'])) {
-        $s .= $_POST['rsargs'];
+        $string .= $_POST['rsargs'];
     }
 
-    return $s;
+    return $string;
 }
 
 function get_the_time()

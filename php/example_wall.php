@@ -6,9 +6,9 @@
 date_default_timezone_set('Europe/Copenhagen');
 $filename = 'tmp/wall.html';
 
-function colorify_ip($ip)
+function colorify_ip($ipAddress)
 {
-    $parts = explode('.', $ip);
+    $parts = explode('.', $ipAddress);
     $color = sprintf('%02s', dechex($parts[1]))
         . sprintf('%02s', dechex($parts[2]))
         . sprintf('%02s', dechex($parts[3]));
@@ -18,15 +18,15 @@ function colorify_ip($ip)
 function add_line($msg)
 {
     global $filename;
-    $f = fopen($filename, 'a');
+    $file = fopen($filename, 'a');
     $date = date('Y-m-d h:i:s');
     $msg = strip_tags(stripslashes($msg));
     $remote = $_SERVER['REMOTE_ADDR'];
     // generate unique-ish color for IP
     $color = colorify_ip($remote);
-    fwrite($f, '<span style="color:#' . $color . '">' . $date . '</span> '
+    fwrite($file, '<span style="color:#' . $color . '">' . $date . '</span> '
         . htmlspecialchars($msg) . '<br />' . "\r\n");
-    fclose($f);
+    fclose($file);
     return refresh(0);
 }
 
@@ -40,9 +40,9 @@ function refresh($lastrefresh)
             'wall' => join("\n", array_slice($lines, -25)),
             'update' => filemtime($filename)
         ];
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 require_once 'Sajax.php';

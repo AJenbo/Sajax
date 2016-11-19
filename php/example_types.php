@@ -24,8 +24,7 @@ function return_object()
             $this->age = $age;
         }
     }
-    $o = new MyObj("Anders", $age);
-    return $o;
+    return new MyObj("Anders", $age);
 }
 
 function return_int()

@@ -1,7 +1,7 @@
 <?php
-function multiply($x, $y)
+function multiply($firstNumber, $secoundNumber)
 {
-    return $x * $y;
+    return $firstNumber * $secoundNumber;
 }
 
 require_once 'Sajax.php';

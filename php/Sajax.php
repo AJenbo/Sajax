@@ -9,6 +9,7 @@ class Sajax
     public static $failureRedirect = '';
     public static $requestType = 'GET';
     private static $functions = [];
+    private static $jsHasBeenShown = false;
 
     public static function handleClientRequest(bool $bustCache = true)
     {
@@ -18,54 +19,44 @@ class Sajax
 
         ob_start();
 
-        $args = [];
-        if (!empty($_GET['rs'])) {
-            if ($bustCache) {
-                // Always call server
-                header('Cache-Control: max-age=0, must-revalidate'); // HTTP/1.1
-                header('Pragma: no-cache');                          // HTTP/1.0
-            }
-            $funcName = $_GET['rs'];
-            if (!empty($_GET['rsargs'])) {
-                $args = $_GET['rsargs'];
-            }
-        } else {
-            $funcName = $_POST['rs'];
-            if (!empty($_POST['rsargs'])) {
-                $args = $_POST['rsargs'];
-            }
+        if ($bustCache && !empty($_GET['rs'])) {
+            // Always call server
+            header('Cache-Control: max-age=0, must-revalidate'); // HTTP/1.1
+            header('Pragma: no-cache');
         }
+        header('Content-Type: text/plain; charset=UTF-8');
+
+        $funcName = $_GET['rs'] ?? $_POST['rs'];
+        $args = $_GET['rsargs'] ?? $_POST['rsargs'] ?? [];
         if ($args) {
             $args = json_decode($args, true);
         }
 
-        $error = '';
-        if (!isset(self::$functions[$funcName])) {
-            $error = $funcName . ' not callable';
-        } else {
+        $result = call_user_func_array($funcName, $args);
+        $error = $funcName . ' not callable';
+        if (isset(self::$functions[$funcName])) {
             $result = call_user_func_array($funcName, $args);
-
-            $error = ob_get_contents();
+            $error = ob_get_contents() ?: '';
             ob_end_clean();
         }
 
-        header('Content-Type: text/plain; charset=UTF-8');
         echo $error ? '-:' . $error : '+:' . json_encode($result);
         exit;
     }
 
     public static function showJavascript()
     {
-        static $jsHasBeenShown = false;
-        if (!$jsHasBeenShown) {
-            echo 'sajax_debug_mode=' . (self::$debugMode ? 'true' : 'false')
-                . ';sajax_failure_redirect = "' . self::$failureRedirect . '";';
-            foreach (self::$functions as $function => $options) {
-                echo 'function x_' . $function . '() {return sajax_do_call("' . $function
-                    . '", arguments, "' . $options['method'] . '", ' . ($options['asynchronous'] ? 'true' : 'false')
-                    . ', "' . $options['uri'] . '");}';
-            }
-            $jsHasBeenShown = true;
+        if (self::$jsHasBeenShown) {
+            return;
+        }
+        self::$jsHasBeenShown = true;
+
+        echo 'sajax.debugMode=' . json_encode(self::$debugMode)
+            . ';sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
+        foreach (self::$functions as $function => $options) {
+            echo 'function x_' . $function . '() {return sajax.doCall("' . $function
+                . '", arguments, "' . $options['method'] . '", ' . ($options['asynchronous'] ? 'true' : 'false')
+                . ', "' . $options['uri'] . '");}';
         }
     }
 
@@ -74,7 +65,7 @@ class Sajax
         if (!is_array($functions)) {
             $functions = [];
             foreach (func_num_args() as $function) {
-                $functions[] = [$function => []];
+                $functions[$function] = [];
             }
         }
 
