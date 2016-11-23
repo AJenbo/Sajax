@@ -1,16 +1,13 @@
 <?php
+// Set default time zone
 date_default_timezone_set('Europe/Copenhagen');
-function test_get()
-{
-    return test();
-}
 
-function test_post()
-{
-    return test();
-}
-
-function test()
+/**
+ * Get some request information
+ *
+ * @return string
+ */
+function test(): string
 {
     $string = 'URI: '.$_SERVER['PHP_SELF'];
     $string .= "\n\n" . '-- GET --' . "\n";
@@ -26,24 +23,59 @@ function test()
     return $string;
 }
 
-function get_the_time()
+/**
+ * Just a different name for test to make it easy to export under different methodes
+ *
+ * @return string
+ */
+function testGet(): string
+{
+    return test();
+}
+
+/**
+ * Just a different name for test to make it easy to export under different methodes
+ *
+ * @return string
+ */
+function testPost(): string
+{
+    return test();
+}
+
+/**
+ * Get the current date
+ *
+ * @return string
+ */
+function getTheTime(): string
 {
     return date('Y-m-d h:i:s');
 }
 
+
+// Include the libery
 require_once 'Sajax.php';
+
+// Uncomment the following line to turn on debugging
 //Sajax\Sajax::$debugMode = true;
+
+// Set redirect page in case of error (only works when not debugging)
 Sajax\Sajax::$failureRedirect = '/sajaxfail.html';
+
+// Export methodes with options
 Sajax\Sajax::export(
     [
-        'test_get'        => ['method' => 'GET'],
-        'test_post'       => ['method' => 'POST'],
-        'get_the_time'    => ['method' => 'GET'],
-        'test'            => ['method' => 'GET'],
-        'sleep'           => ['asynchronous' => false],
-        'otherefucntion'  => ['uri' => 'example_otheruri.php'],
+        'testGet'       => ['method' => 'GET'],
+        'testPost'      => ['method' => 'POST'],
+        'getTheTime'    => ['method' => 'GET'],
+        'test'          => ['method' => 'GET'],
+        'sleep'         => ['asynchronous' => false],
+        'otherFucntion' => ['uri' => 'example_otheruri.php'],
     ]
 );
+
+// Handel the ajax request, script will exit here on ajax calls
 Sajax\Sajax::handleClientRequest();
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -57,6 +89,9 @@ Sajax\Sajax::handleClientRequest();
 <script type="text/javascript" src="sajax.js"></script>
 <script type="text/javascript"><!--
 <?php Sajax\Sajax::showJavascript(); ?>
+/**
+ * Handel the return form the PHP function on return
+ */
 function print_result(v) {
     alert(v);
 }
@@ -65,22 +100,22 @@ function print_result(v) {
 </head>
 <body>
 <!-- Testing if the browser supports GET -->
-<button onclick="x_test_get(1, 2, 3, print_result);">Test GET</button>
+<button onclick="x_testGet(1, 2, 3, print_result);">Test GET</button>
 
 <!-- Testing if the browser supports POST -->
-<button onclick="x_test_post(1, 2, 3, print_result);">Test POST</button>
+<button onclick="x_testPost(1, 2, 3, print_result);">Test POST</button>
 
 <!-- Forcing the function to POST -->
-<button onclick="sajax_request_type ='POST'; x_test(1, 2, 3, print_result); sajax_request_type ='';">Test force POST</button>
+<button onclick="sajaxRequest_type ='POST'; x_test(1, 2, 3, print_result); sajax_request_type ='';">Test force POST</button>
 
 <!-- if sajax_target_id is set, the sesponce will be inserted as HTML in an element with sajax_target_id for id-->
-<button onclick="sajax_target_id = 'time'; x_get_the_time(); sajax_target_id = '';">Test updating IDs</button>
+<button onclick="sajaxTargetId = 'time'; x_get_the_time(); sajax_target_id = '';">Test updating IDs</button>
 
 <!-- Calling a synchronous will cause the script to wait for the responce -->
 <button onclick="x_sleep(3, function(){}); alert('Link was clicked!');">Test synchronous</button>
 
 <!-- Different URI set at config -->
-<button onclick="x_otherefucntion(print_result);">Call to other uri.</button>
+<button onclick="x_otherFucntion(print_result);">Call to other uri.</button>
 
 <div id="time"><em>Time will appear here</em></div>
 </body>

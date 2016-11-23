@@ -2,15 +2,48 @@
 
 use \Exception;
 
+/**
+ * Sajax class
+ */
 class Sajax
 {
+    /**
+     * Are we in debug mode
+     */
     public static $debugMode = false;
+
+    /**
+     * Default to this url for requests
+     */
     public static $remoteUri = '';
+
+    /**
+     * Redirect to this url on failure
+     */
     public static $failureRedirect = '';
+
+    /**
+     * Default request type
+     */
     public static $requestType = 'GET';
+
+    /**
+     * Exported functions
+     */
     private static $functions = [];
+
+    /**
+     * Has the JS been printed already
+     */
     private static $jsHasBeenShown = false;
 
+    /**
+     * Handel ajax request from the browser
+     *
+     * @param bool $bustCache Permit peropper cache header in scripts
+     *
+     * @return void
+     */
     public static function handleClientRequest(bool $bustCache = true)
     {
         if (empty($_GET['rs']) && empty($_POST['rs'])) {
@@ -44,6 +77,11 @@ class Sajax
         exit;
     }
 
+    /**
+     * Print the JS code for interacting with the exported functions
+     *
+     * @return void
+     */
     public static function showJavascript()
     {
         if (self::$jsHasBeenShown) {
@@ -60,15 +98,15 @@ class Sajax
         }
     }
 
-    public static function export($functions)
+    /**
+     * Export functions
+     *
+     * @param array $functions Functions as key options as an assigned array
+     *
+     * @return void
+     */
+    public static function export(array $functions)
     {
-        if (!is_array($functions)) {
-            $functions = [];
-            foreach (func_num_args() as $function) {
-                $functions[$function] = [];
-            }
-        }
-
         foreach ($functions as $function => $options) {
             if (!function_exists($function) && empty($options['uri'])) {
                 throw new Exception('SAJAX: Cannot export "' . $function . '" as it doesn\'t exists!');

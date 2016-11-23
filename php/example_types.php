@@ -1,16 +1,30 @@
 <?php
+// Set default time zone
 date_default_timezone_set('Europe/Copenhagen');
 
+// Find bday
 $bday = strtotime('5 September 1983');
+
+// Caculate the difference form bday and now
 $age = (date('z') - date('z', $bday)) / 1000 + date('Y') - date('Y', $bday);
 
-function return_array()
+/**
+ * Return an array
+ *
+ * @return array
+ */
+function returnArray(): array
 {
     global $age;
     return ["name" => "Anders", "age" => $age];
 }
 
-function return_object()
+/**
+ * Return an object
+ *
+ * @return MyObj
+ */
+function returnObject()
 {
     global $age;
     class MyObj
@@ -27,37 +41,64 @@ function return_object()
     return new MyObj("Anders", $age);
 }
 
-function return_int()
+/**
+ * Return an integer representation
+ *
+ * @return int
+ */
+function returnInt(): int
 {
     global $age;
     return floor($age);
 }
 
-function return_float()
+/**
+ * Return a float representation
+ *
+ * @return float
+ */
+function returnFloat(): float
 {
     global $age;
     return $age;
 }
 
-function return_string()
+/**
+ * Return a string representation
+ *
+ * @return string
+ */
+function returnString(): string
 {
     global $age;
     return "Anders is " . floor($age) . " years old.";
 }
 
+
+// Include the libery
 require_once 'Sajax.php';
+
+// Set default request methode to GET (only other option is POST)
 Sajax\Sajax::$requestType = 'GET';
+
+// Uncomment the following line to turn on debugging
 //Sajax\Sajax::$debugMode = true;
+
+// Set redirect page in case of error (only works when not debugging)
 Sajax\Sajax::$failureRedirect = '/sajaxfail.html';
+
+// Export methodes with default options (empty array as value)
 Sajax\Sajax::export(
     [
-        'return_array'  => [],
-        'return_object' => [],
-        'return_int'    => [],
-        'return_float'  => [],
-        'return_string' => [],
+        'returnArray'  => [],
+        'returnObject' => [],
+        'returnInt'    => [],
+        'returnFloat'  => [],
+        'returnString' => [],
     ]
 );
+
+// Handel the ajax request, script will exit here on ajax calls
 Sajax\Sajax::handleClientRequest();
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -71,6 +112,10 @@ Sajax\Sajax::handleClientRequest();
 <script type="text/javascript" src="sajax.js"></script>
 <script type="text/javascript"><!--
 <?php Sajax\Sajax::showJavascript(); ?>
+
+/**
+ * Handel the return form the PHP function on return
+ */
 function display_result(val) {
     var repr;
 
@@ -92,10 +137,10 @@ function display_result(val) {
 </script>
 </head>
 <body>
-<button onclick="x_return_array(display_result);">Return as array (will become an object)</button>
-<button onclick="x_return_object(display_result);">Return as object</button>
-<button onclick="x_return_int(display_result);">Return as int</button>
-<button onclick="x_return_float(display_result);">Return as float/double</button>
-<button onclick="x_return_string(display_result);">Return as string</button>
+<button onclick="x_returnArray(display_result);">Return as array (will become an object)</button>
+<button onclick="x_returnObject(display_result);">Return as object</button>
+<button onclick="x_returnInt(display_result);">Return as int</button>
+<button onclick="x_returnFloat(display_result);">Return as float/double</button>
+<button onclick="x_returnString(display_result);">Return as string</button>
 </body>
 </html>

@@ -1,13 +1,30 @@
 <?php
-function multiply($firstNumber, $secoundNumber)
+/**
+ * Simple multiply function
+ *
+ * @param float $firstNumber
+ * @param float $secoundNumber
+ *
+ * @return return float
+ */
+function multiply(float $firstNumber, float $secoundNumber): float
 {
     return $firstNumber * $secoundNumber;
 }
 
+// Include the libery
 require_once 'Sajax.php';
+
+// Uncomment the following line to turn on debugging
 //Sajax\Sajax::$debugMode = true;
+
+// Set redirect page in case of error (only works when not debugging)
 Sajax\Sajax::$failureRedirect = '/sajaxfail.html';
+
+// Export the multiply with default options (empty array as value)
 Sajax\Sajax::export(['multiply' => []]);
+
+// Handel the ajax request, script will exit here on ajax calls
 Sajax\Sajax::handleClientRequest();
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -22,10 +39,9 @@ Sajax\Sajax::handleClientRequest();
 <script type="text/javascript"><!--
 <?php Sajax\Sajax::showJavascript(); ?>
 
-function do_multiply_cb(z) {
-    document.getElementById("z").value = z;
-}
-
+/**
+ * Dispatch a call to the PHP function
+ */
 function do_multiply() {
     // get the folder name
     var x, y;
@@ -33,6 +49,13 @@ function do_multiply() {
     x = parseFloat(document.getElementById("x").value);
     y = parseFloat(document.getElementById("y").value);
     x_multiply(x, y, do_multiply_cb);
+}
+
+/**
+ * Handel the return form the PHP function on return
+ */
+function do_multiply_cb(z) {
+    document.getElementById("z").value = z;
 }
 //-->
 </script>

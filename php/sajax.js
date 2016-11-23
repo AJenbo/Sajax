@@ -41,18 +41,12 @@ sajax.cancel = function (id) {
 }
 
 sajax.doCall = function (funcName, args, method, asynchronous, uri) {
-	//Handle old code calls
-	switch(arguments.length) {
-		case 0:
-			return false;
-		case 1:
-			var args = [];
-		case 2:
-			var method = "GET";
-		case 3:
-			var asynchronous = true;
-		case 4:
-			var uri = "";
+	var i, x, data;
+	var targetId = sajax.targetId;
+	var argsarray = [];
+
+	if (asynchronous) {
+		var id = sajax.requests.length;
 	}
 
 	if (sajax.requestType !== "") {
@@ -70,11 +64,6 @@ sajax.doCall = function (funcName, args, method, asynchronous, uri) {
 	if (uri === "") {
 		uri = window.location.href.replace(/#.*$/, "");
 	}
-
-	var i, x;
-	var data;
-	var targetId = sajax.targetId;
-	var argsarray = [];
 
 	sajax.debug("in sajax.doCall().." + method + "/" + sajax.targetId);
 
@@ -174,7 +163,9 @@ sajax.doCall = function (funcName, args, method, asynchronous, uri) {
 			} else {
 				callback(res, extraData);
 			}
-			sajax.requests.splice(id, 1, null);
+			if (asynchronous) {
+				sajax.requests.splice(id, 1, null);
+			}
 		} catch(e) {
 			sajax.debug("Caught error " + e + ": Could not parse " + data );
 			return false;
@@ -202,7 +193,6 @@ sajax.doCall = function (funcName, args, method, asynchronous, uri) {
 	sajax.debug(funcName + " waiting..");
 
 	if (asynchronous) {
-		var id = sajax.requests.length;
 		sajax.requests[id] = x;
 		return id;
 	}
@@ -214,12 +204,12 @@ sajax.doCall = function (funcName, args, method, asynchronous, uri) {
 if (typeof(window.XMLHttpRequest) === "undefined") {
 	window.XMLHttpRequest = function() {
 		var msxmlhttp = [
-			'Msxml2.XMLHTTP.6.0',
-			'Msxml2.XMLHTTP.5.0',
-			'Msxml2.XMLHTTP.4.0',
-			'Msxml2.XMLHTTP.3.0',
-			'Msxml2.XMLHTTP',
-			'Microsoft.XMLHTTP'
+			"Msxml2.XMLHTTP.6.0",
+			"Msxml2.XMLHTTP.5.0",
+			"Msxml2.XMLHTTP.4.0",
+			"Msxml2.XMLHTTP.3.0",
+			"Msxml2.XMLHTTP",
+			"Microsoft.XMLHTTP"
 		];
 		for (var i = 0; i < msxmlhttp.length; i++) {
 			try { return new window.ActiveXObject(msxmlhttp[i]); }

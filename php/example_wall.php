@@ -3,10 +3,20 @@
  * The world's least efficient wall implementation (now a bit more efficient)
  */
 
+// Set default time zone
 date_default_timezone_set('Europe/Copenhagen');
+
+// File contaning messages up til now
 $filename = 'tmp/wall.html';
 
-function colorify_ip($ipAddress)
+/**
+ * Convert ip to a hex color, non reversably
+ *
+ * @param string $ipAddress
+ *
+ * @return string
+ */
+function colorifyIp(string $ipAddress)
 {
     $parts = explode('.', $ipAddress);
     $color = sprintf('%02s', dechex($parts[1]))
@@ -15,7 +25,14 @@ function colorify_ip($ipAddress)
     return $color;
 }
 
-function add_line($msg)
+/**
+ * Post a message and get changes since last request
+ *
+ * @param string $msg Message to post
+ *
+ * @return array|false
+ */
+function addLine(string $msg)
 {
     global $filename;
     $file = fopen($filename, 'a');
@@ -23,14 +40,21 @@ function add_line($msg)
     $msg = strip_tags(stripslashes($msg));
     $remote = $_SERVER['REMOTE_ADDR'];
     // generate unique-ish color for IP
-    $color = colorify_ip($remote);
+    $color = colorifyIp($remote);
     fwrite($file, '<span style="color:#' . $color . '">' . $date . '</span> '
         . htmlspecialchars($msg) . '<br />' . "\r\n");
     fclose($file);
     return refresh(0);
 }
 
-function refresh($lastrefresh)
+/**
+ * Get changes since last request
+ *
+ * @param int $lastrefresh Time of last request
+ *
+ * @return array|false
+ */
+function refresh(int $lastrefresh)
 {
     global $filename;
     if (filemtime($filename) > $lastrefresh) {
@@ -45,15 +69,18 @@ function refresh($lastrefresh)
     return false;
 }
 
+// Include the libery
 require_once 'Sajax.php';
-//$sajax_debug_mode = true;
+// Set redirect page in case of error
 Sajax\Sajax::$failureRedirect = '/sajaxfail.html';
+// Export methodes
 Sajax\Sajax::export(
     [
-        'add_line' => ['method' => 'POST'],
+        'addLine' => ['method' => 'POST'],
         'refresh'  => ['method' => 'GET'],
     ]
 );
+// Handel the ajax request, script will exit here on ajax calls
 Sajax\Sajax::handleClientRequest();
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -73,7 +100,13 @@ Sajax\Sajax::handleClientRequest();
 <?php Sajax\Sajax::showJavascript(); ?>
 
 var check_n = 1;
+/**
+ * Keeps track of next call for enw messages
+ */
 var nextrefresh;
+/**
+ * Insert new messages
+ */
 function refresh_cb(data) {
     if(data !== false) {
         document.getElementById("wall").innerHTML = data["wall"];
@@ -82,17 +115,24 @@ function refresh_cb(data) {
         nextrefresh = setTimeout("refresh();", 1000);
     } else {
         clearTimeout(nextrefresh);
+        // It's a slow day, lower the check rate
         nextrefresh = setTimeout("refresh();", 2500);
     }
     document.getElementById("status").innerHTML = "Checked #" + check_n++;
 }
 
 var lastrefresh = <?php echo(filemtime($filename)); ?>;
+/**
+ * Get latest messages
+ */
 function refresh() {
     document.getElementById("status").innerHTML = "Checking..";
     x_refresh(lastrefresh, refresh_cb);
 }
 
+/**
+ * Add new message
+ */
 function add() {
     var line;
     var handle;
@@ -100,10 +140,13 @@ function add() {
     line = document.getElementById("line").value;
     if(line == "")
         return;
-    x_add_line("[" + handle + "] " + line, refresh_cb);
+    x_addLine("[" + handle + "] " + line, refresh_cb);
     document.getElementById("line").value = "";
 }
 
+/**
+ * Listen for enter and post message
+ */
 function keypress(keyCode) {
     if (keyCode==13) {
         add();
@@ -113,6 +156,7 @@ function keypress(keyCode) {
     return true;
 }
 
+// Check for new messages
 nextrefresh = setTimeout("refresh();", 1000);
 //-->
 </script>
@@ -125,6 +169,7 @@ nextrefresh = setTimeout("refresh();", 1000);
     <input type="button" name="check" value="Post message" onclick="add(); return false;" />
 </form>
 <div id="wall"> <?php $temp = refresh(0);
+// Pre-load initial messages
 echo($temp['wall']); ?></div>
 <div id="status">Checked #0</div>
 </body>
