@@ -2,8 +2,8 @@
 /**
  * Simple multiply function
  *
- * @param float $firstNumber
- * @param float $secoundNumber
+ * @param float $firstNumber   Number to multiply
+ * @param float $secoundNumber Number to multiply with
  *
  * @return return float
  */

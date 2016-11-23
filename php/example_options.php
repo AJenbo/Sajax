@@ -109,7 +109,7 @@ function print_result(v) {
 <button onclick="sajaxRequest_type ='POST'; x_test(1, 2, 3, print_result); sajax_request_type ='';">Test force POST</button>
 
 <!-- if sajax_target_id is set, the sesponce will be inserted as HTML in an element with sajax_target_id for id-->
-<button onclick="sajaxTargetId = 'time'; x_get_the_time(); sajax_target_id = '';">Test updating IDs</button>
+<button onclick="sajaxTargetId = 'time'; x_getTheTime(); sajax_target_id = '';">Test updating IDs</button>
 
 <!-- Calling a synchronous will cause the script to wait for the responce -->
 <button onclick="x_sleep(3, function(){}); alert('Link was clicked!');">Test synchronous</button>

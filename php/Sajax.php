@@ -47,10 +47,10 @@ class Sajax
     public static function handleClientRequest(bool $bustCache = true)
     {
         if (empty($_GET['rs']) && empty($_POST['rs'])) {
-            return;
+            return; // This is not a Ajax request, return to parent script
         }
 
-        ob_start();
+        ob_start(); // Capture all output
 
         if ($bustCache && !empty($_GET['rs'])) {
             // Always call server
@@ -59,22 +59,24 @@ class Sajax
         }
         header('Content-Type: text/plain; charset=UTF-8');
 
+        // Get request data
         $funcName = $_GET['rs'] ?? $_POST['rs'];
         $args = $_GET['rsargs'] ?? $_POST['rsargs'] ?? [];
         if ($args) {
             $args = json_decode($args, true);
         }
 
-        $result = call_user_func_array($funcName, $args);
+        $result = [];
         $error = $funcName . ' not callable';
         if (isset(self::$functions[$funcName])) {
-            $result = call_user_func_array($funcName, $args);
-            $error = ob_get_contents() ?: '';
+            $result = call_user_func_array($funcName, $args); // Execute exported function
+            $error = ob_get_contents() ?: ''; // If there where any output during execution we return it as an error
             ob_end_clean();
         }
 
+        // Print result
         echo $error ? '-:' . $error : '+:' . json_encode($result);
-        exit;
+        exit; // End execution
     }
 
     /**
@@ -85,12 +87,21 @@ class Sajax
     public static function showJavascript()
     {
         if (self::$jsHasBeenShown) {
-            return;
+            return; // JS was already printed, do nothing
         }
         self::$jsHasBeenShown = true;
 
-        echo 'sajax.debugMode=' . json_encode(self::$debugMode)
-            . ';sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
+        // Put client in debug mode
+        if (self::$debugMode) {
+            echo 'sajax.debugMode=' . json_encode(self::$debugMode) . ';'
+        }
+
+        // Set failure url
+        if (self::$failureRedirect) {
+            echo 'sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
+        }
+
+        // Print JS for each individual exported function
         foreach (self::$functions as $function => $options) {
             echo 'function x_' . $function . '() {return sajax.doCall("' . $function
                 . '", arguments, "' . $options['method'] . '", ' . ($options['asynchronous'] ? 'true' : 'false')
@@ -108,21 +119,15 @@ class Sajax
     public static function export(array $functions)
     {
         foreach ($functions as $function => $options) {
+            // Chec if function exists, but only if it's a local url
             if (!function_exists($function) && empty($options['uri'])) {
                 throw new Exception('SAJAX: Cannot export "' . $function . '" as it doesn\'t exists!');
             }
 
-            if (empty($options['method'])) {
-                $options['method'] = self::$requestType;
-            }
-
-            if (!isset($options['asynchronous'])) {
-                $options['asynchronous'] = true;
-            }
-
-            if (empty($options['uri'])) {
-                $options['uri'] = self::$remoteUri;
-            }
+            // Set defaults if options not specefied
+            $options['method'] = empty($options['method']) ? $options['method'] : self::$requestType;
+            $options['asynchronous'] = empty($options['asynchronous']) ? $options['asynchronous'] : true;
+            $options['uri'] = empty($options['uri']) ? $options['uri'] : self::$remoteUri;
 
             self::$functions[$function] = $options;
         }

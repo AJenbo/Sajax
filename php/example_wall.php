@@ -12,7 +12,7 @@ $filename = 'tmp/wall.html';
 /**
  * Convert ip to a hex color, non reversably
  *
- * @param string $ipAddress
+ * @param string $ipAddress Ip adds to convert
  *
  * @return string
  */
