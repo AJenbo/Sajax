@@ -93,7 +93,7 @@ class Sajax
 
         // Put client in debug mode
         if (self::$debugMode) {
-            echo 'sajax.debugMode=' . json_encode(self::$debugMode) . ';'
+            echo 'sajax.debugMode=' . json_encode(self::$debugMode) . ';';
         }
 
         // Set failure url
