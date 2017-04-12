@@ -93,7 +93,7 @@ class Sajax
 
         // Put client in debug mode
         if (self::$debugMode) {
-            echo 'sajax.debugMode=' . json_encode(self::$debugMode) . ';';
+            echo 'sajax.debugMode=true;';
         }
 
         // Set failure url
@@ -125,9 +125,9 @@ class Sajax
             }
 
             // Set defaults if options not specefied
-            $options['method'] = empty($options['method']) ? $options['method'] : self::$requestType;
-            $options['asynchronous'] = empty($options['asynchronous']) ? $options['asynchronous'] : true;
-            $options['uri'] = empty($options['uri']) ? $options['uri'] : self::$remoteUri;
+            $options['method'] = $options['method'] ?? null ?: self::$requestType;
+            $options['asynchronous'] = (bool) ($options['asynchronous'] ?? true);
+            $options['uri'] = $options['uri'] ?? null ?: self::$remoteUri;
 
             self::$functions[$function] = $options;
         }

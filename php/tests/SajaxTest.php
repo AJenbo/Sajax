@@ -29,7 +29,7 @@ class SajaxTest extends PHPUnit_Framework_TestCase
         Sajax::showJavascript();
         $output = ob_get_clean();
 
-        $expected = 'sajax.debugMode=false;sajax.failureRedirect = "";function x_test() {return sajax.doCall("test", arguments, "GET", true, "");}';
+        $expected = 'function x_test() {return sajax.doCall("test", arguments, "GET", true, "");}';
         $this->assertEquals($expected, $output);
     }
 }
