@@ -13,6 +13,11 @@ class Sajax
     public static $debugMode = false;
 
     /**
+     * Are we in debug mode
+     */
+    public static $testMode = false;
+
+    /**
      * Default to this url for requests
      */
     public static $remoteUri = '';
@@ -52,13 +57,14 @@ class Sajax
 
         ob_start(); // Capture all output
 
-        if ($bustCache && !empty($_GET['rs'])) {
-            // Always call server
-            header('Cache-Control: max-age=0, must-revalidate'); // HTTP/1.1
-            header('Pragma: no-cache');
+        if (!self::$testMode) {
+            if ($bustCache && !empty($_GET['rs'])) {
+                // Always call server
+                header('Cache-Control: max-age=0, must-revalidate'); // HTTP/1.1
+                header('Pragma: no-cache');
+            }
+            header('Content-Type: text/plain; charset=UTF-8');
         }
-        header('Content-Type: text/plain; charset=UTF-8');
-
         // Get request data
         $funcName = $_GET['rs'] ?? $_POST['rs'];
         $args = $_GET['rsargs'] ?? $_POST['rsargs'] ?? [];
@@ -76,7 +82,9 @@ class Sajax
 
         // Print result
         echo $error ? '-:' . $error : '+:' . json_encode($result);
-        exit; // End execution
+        if (!self::$testMode) {
+            exit; // End execution
+        }
     }
 
     /**
