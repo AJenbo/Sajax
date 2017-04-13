@@ -93,19 +93,19 @@ class Sajax
 
         // Put client in debug mode
         if (self::$debugMode) {
-            echo 'sajax.debugMode=true;';
+            echo 'sajax.debugMode=!0;';
         }
 
         // Set failure url
         if (self::$failureRedirect) {
-            echo 'sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
+            echo 'sajax.failureRedirect=' . json_encode(self::$failureRedirect) . ';';
         }
 
         // Print JS for each individual exported function
         foreach (self::$functions as $function => $options) {
-            echo 'function x_' . $function . '() {return sajax.doCall("' . $function
-                . '", arguments, "' . $options['method'] . '", ' . ($options['asynchronous'] ? 'true' : 'false')
-                . ', "' . $options['uri'] . '");}';
+            echo 'function x_' . $function . '(){return sajax.doCall(' . json_encode($function)
+                . ',arguments,' . json_encode($options['method']) . ',' . ($options['asynchronous'] ? '!0' : '!1')
+                . ',' . json_encode($options['uri']) . ')}';
         }
     }
 
