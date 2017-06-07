@@ -13,6 +13,11 @@ class Sajax
     public static $debugMode = false;
 
     /**
+     * Are we in debug mode
+     */
+    public static $testMode = false;
+
+    /**
      * Default to this url for requests
      */
     public static $remoteUri = '';
@@ -52,13 +57,14 @@ class Sajax
 
         ob_start(); // Capture all output
 
-        if ($bustCache && !empty($_GET['rs'])) {
-            // Always call server
-            header('Cache-Control: max-age=0, must-revalidate'); // HTTP/1.1
-            header('Pragma: no-cache');
+        if (!self::$testMode) {
+            if ($bustCache && !empty($_GET['rs'])) {
+                // Always call server
+                header('Cache-Control: max-age=0, must-revalidate'); // HTTP/1.1
+                header('Pragma: no-cache');
+            }
+            header('Content-Type: text/plain; charset=UTF-8');
         }
-        header('Content-Type: text/plain; charset=UTF-8');
-
         // Get request data
         $funcName = $_GET['rs'] ?? $_POST['rs'];
         $args = $_GET['rsargs'] ?? $_POST['rsargs'] ?? [];
@@ -76,7 +82,9 @@ class Sajax
 
         // Print result
         echo $error ? '-:' . $error : '+:' . json_encode($result);
-        exit; // End execution
+        if (!self::$testMode) {
+            exit; // End execution
+        }
     }
 
     /**
@@ -97,19 +105,19 @@ class Sajax
 
         // Put client in debug mode
         if (self::$debugMode) {
-            $js .= 'sajax.debugMode=' . json_encode(self::$debugMode) . ';';
+            $js .= 'sajax.debugMode=!0;';
         }
 
         // Set failure url
         if (self::$failureRedirect) {
-            $js .= 'sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
+            $js .= 'sajax.failureRedirect=' . json_encode(self::$failureRedirect) . ';';
         }
 
         // Print JS for each individual exported function
         foreach (self::$functions as $function => $options) {
-            $js .= 'function x_' . $function . '() {return sajax.doCall("' . $function
-                . '", arguments, "' . $options['method'] . '", ' . ($options['asynchronous'] ? 'true' : 'false')
-                . ', "' . $options['uri'] . '");}';
+            $js .= 'function x_' . $function . '(){return sajax.doCall(' . json_encode($function)
+                . ',arguments,' . json_encode($options['method']) . ',' . ($options['asynchronous'] ? '!0' : '!1')
+                . ',' . json_encode($options['uri']) . ')}';
         }
 
         if (!$return) {
@@ -136,9 +144,9 @@ class Sajax
             }
 
             // Set defaults if options not specefied
-            $options['method'] = empty($options['method']) ? $options['method'] : self::$requestType;
-            $options['asynchronous'] = empty($options['asynchronous']) ? $options['asynchronous'] : true;
-            $options['uri'] = empty($options['uri']) ? $options['uri'] : self::$remoteUri;
+            $options['method'] = $options['method'] ?? null ?: self::$requestType;
+            $options['asynchronous'] = (bool) ($options['asynchronous'] ?? true);
+            $options['uri'] = $options['uri'] ?? null ?: self::$remoteUri;
 
             self::$functions[$function] = $options;
         }
