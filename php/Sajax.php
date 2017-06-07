@@ -82,31 +82,42 @@ class Sajax
     /**
      * Print the JS code for interacting with the exported functions
      *
-     * @return void
+     * @return null|string
      */
-    public static function showJavascript()
+    public static function showJavascript(bool $return = false): ?string
     {
-        if (self::$jsHasBeenShown) {
-            return; // JS was already printed, do nothing
+        if (!$return) {
+            if (self::$jsHasBeenShown) {
+                return null; // JS was already printed, do nothing
+            }
+            self::$jsHasBeenShown = true;
         }
-        self::$jsHasBeenShown = true;
+
+        $js = '';
 
         // Put client in debug mode
         if (self::$debugMode) {
-            echo 'sajax.debugMode=' . json_encode(self::$debugMode) . ';'
+            $js .= 'sajax.debugMode=' . json_encode(self::$debugMode) . ';';
         }
 
         // Set failure url
         if (self::$failureRedirect) {
-            echo 'sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
+            $js .= 'sajax.failureRedirect = ' . json_encode(self::$failureRedirect) . ';';
         }
 
         // Print JS for each individual exported function
         foreach (self::$functions as $function => $options) {
-            echo 'function x_' . $function . '() {return sajax.doCall("' . $function
+            $js .= 'function x_' . $function . '() {return sajax.doCall("' . $function
                 . '", arguments, "' . $options['method'] . '", ' . ($options['asynchronous'] ? 'true' : 'false')
                 . ', "' . $options['uri'] . '");}';
         }
+
+        if (!$return) {
+            echo $js;
+            return null;
+        }
+
+        return $js;
     }
 
     /**
