@@ -130,7 +130,7 @@ sajax.doCall = function (funcName, args, method, asynchronous, uri) {
 			data = data.substring(2);
 		}
 
-		if (status === "" && (x.status === 200 || x.status === "" || x.status === "12019")) {
+		if (status === "" && (x.status === 0 || x.status === 200 || x.status === "" || x.status === "12019")) {
 			// let's just assume this is a pre-response bailout and let it slide for now
 			return false;
 		}

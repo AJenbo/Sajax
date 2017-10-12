@@ -1,53 +1,51 @@
 <?php namespace Sajax;
 
 /**
- * Sajax class
+ * Sajax class.
  */
 class Sajax
 {
     /**
-     * Are we in debug mode
+     * Are we in debug mode.
      */
     public static $debugMode = false;
 
     /**
-     * Are we in debug mode
+     * Are we in debug mode.
      */
     public static $testMode = false;
 
     /**
-     * Default to this url for requests
+     * Default to this url for requests.
      */
     public static $remoteUri = '';
 
     /**
-     * Redirect to this url on failure
+     * Redirect to this url on failure.
      */
     public static $failureRedirect = '';
 
     /**
-     * Default request type
+     * Default request type.
      */
     public static $requestType = 'GET';
 
     /**
-     * Exported functions
+     * Exported functions.
      */
     private static $functions = [];
 
     /**
-     * Has the JS been printed already
+     * Has the JS been printed already.
      */
     private static $jsHasBeenShown = false;
 
     /**
-     * Handel ajax request from the browser
+     * Handel ajax request from the browser.
      *
      * @param bool $bustCache Permit peropper cache header in scripts
-     *
-     * @return void
      */
-    public static function handleClientRequest(bool $bustCache = true)
+    public static function handleClientRequest(bool $bustCache = true): void
     {
         if (empty($_GET['rs']) && empty($_POST['rs'])) {
             return; // This is not a Ajax request, return to parent script
@@ -86,9 +84,7 @@ class Sajax
     }
 
     /**
-     * Print the JS code for interacting with the exported functions
-     *
-     * @return null|string
+     * Print the JS code for interacting with the exported functions.
      */
     public static function showJavascript(bool $return = false): ?string
     {
@@ -120,6 +116,7 @@ class Sajax
 
         if (!$return) {
             echo $js;
+
             return null;
         }
 
@@ -127,13 +124,11 @@ class Sajax
     }
 
     /**
-     * Export functions
+     * Export functions.
      *
      * @param array $functions Functions as key options as an assigned array
-     *
-     * @return void
      */
-    public static function export(array $functions)
+    public static function export(array $functions): void
     {
         foreach ($functions as $function => $options) {
             // Chec if function exists, but only if it's a local url
