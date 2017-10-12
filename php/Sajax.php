@@ -1,7 +1,5 @@
 <?php namespace Sajax;
 
-use \Exception;
-
 /**
  * Sajax class
  */
@@ -140,7 +138,7 @@ class Sajax
         foreach ($functions as $function => $options) {
             // Chec if function exists, but only if it's a local url
             if (!function_exists($function) && empty($options['uri'])) {
-                throw new Exception('SAJAX: Cannot export "' . $function . '" as it doesn\'t exists!');
+                throw new SajaxException('SAJAX: Cannot export "' . $function . '" as it doesn\'t exists!');
             }
 
             // Set defaults if options not specefied
