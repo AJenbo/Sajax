@@ -36,7 +36,7 @@ class SajaxTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Exception
+     * @expectedException Sajax\SajaxException
      */
     public function test_export_does_not_exists()
     {
