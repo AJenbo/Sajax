@@ -1,5 +1,7 @@
 WELCOME TO SAJAX
-----------------
+================
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/194ee26fecdc4092ad05cdd3a9b91eaf)](https://www.codacy.com/app/AJenbo/Sajax?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AJenbo/Sajax&amp;utm_campaign=Badge_Grade)
 
 Sajax is a cross-platform, cross-browser web scripting toolkit
 that makes it easy to expose functions in your code to JavaScript.
